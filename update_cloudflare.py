@@ -7,7 +7,7 @@ import requests
 import time
 
 config = ConfigParser.SafeConfigParser()
-config.read('update_cloudflare.props')
+config.read('conf/update_cloudflare.props')
 
 logfile = config.get('log', 'logfile')
 
@@ -61,7 +61,7 @@ while True:
             packet = r.json()
             for dns in packet['result']:
                 if dns['name'] == dns_record_host and dns['type'] == dns_record_type: 
-                    print (json.dumps(dns, indent=1))
+                    #print (json.dumps(dns, indent=1))
                     current_ip = dns['content']
                     dns_record_id = dns['id']
                     logger.info('DNSID: {}  current IP: {}'.format(dns_record_id, current_ip))
