@@ -1,0 +1,3 @@
+update_cloudflare.props
+update_cloudflare.props.docker
+log/*
