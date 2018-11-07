@@ -40,7 +40,7 @@ while True:
     r = requests.get(url, headers=headers)
     if r.status_code != 200:
         logger.error('Failed to get zones: error{}'.format(r.text))
-        exit(1)
+        #exit(1)
     else:
         # print(r.json())
         packet = r.json()
