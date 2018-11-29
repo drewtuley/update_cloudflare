@@ -37,9 +37,14 @@ while True:
     new_ip = None
     headers = {'Content-Type': 'application/json', 'X-Auth-Email': x_auth_email, 'X-Auth-Key': x_auth_key}
     url = '{}/zones'.format(v4url)
-    r = requests.get(url, headers=headers)
-    if r.status_code != 200:
-        logger.error('Failed to get zones: error{}'.format(r.text))
+    try:
+        r = requests.get(url, headers=headers)
+    except requests.exceptions.ConnectionError as err:
+        logger.error(err)
+        r = None
+    if r is None or r.status_code != 200:
+        if r is not None:
+            logger.error('Failed to get zones: error{}'.format(r.text))
         #exit(1)
     else:
         # print(r.json())
@@ -55,8 +60,12 @@ while True:
         logger.info('ZoneID: {}'.format(zone_id))
     if zone_id is not None:
         url = '{}/zones/{}/dns_records'.format(v4url, zone_id)
-        r = requests.get(url, headers=headers)
-        if r.status_code == 200:
+        try:
+            r = requests.get(url, headers=headers)
+        except requests.exceptions.ConnectionError as err:
+            logger.error(err)
+            r = None
+        if r is not None and r.status_code == 200:
             packet = r.json()
             for dns in packet['result']:
                 if dns['name'] == dns_record_host and dns['type'] == dns_record_type:
@@ -67,11 +76,16 @@ while True:
 
             if current_ip is not None:
                 new_ip = None
-                r = requests.get(new_ip_url)
-                if r.status_code == 200:
-                    m = re.search('\d+[.]\d+[.]\d+[.]\d+', r.text)
-                    if m is not None:
-                        new_ip = m.group()
+                try:
+                    r = requests.get(new_ip_url)
+                except requests.exceptions.ConnectionError as err:
+                    logger.error(err)
+                    r = None
+                if r is not None and r.status_code == 200:
+                    if r is not None:
+                        m = re.search('\d+[.]\d+[.]\d+[.]\d+', r.text)
+                        if m is not None:
+                            new_ip = m.group()
                 if new_ip is not None and new_ip == current_ip:
                     logger.info('IP unchanged - do nothing')
                 else:
