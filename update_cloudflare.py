@@ -91,12 +91,15 @@ while True:
                 else:
                     data = {"type": dns_record_type, "name": dns_record_host, "content": new_ip}
                     url = '{}/zones/{}/dns_records/{}'.format(v4url, zone_id, dns_record_id)
-                    r = requests.put(url, json.dumps(data), headers=headers)
-                    if r.status_code == 200:
+                    try:
+                        r = requests.put(url, json.dumps(data), headers=headers)
+                    except requests.exceptions.ConnectionError as err:
+                        logger.error(err)
+                        r = None
+                    if r is not None and r.status_code == 200:
                         logger.info('IP updated to {}'.format(new_ip))
-                    else:
+                    elif r is not None:
                         logger.error('Failed to update IP - error {}'.format(r.text))
-                        exit(1)
     logger.info('Sleeping for {} seconds'.format(sleep_period))
     time.sleep(sleep_period)
 
