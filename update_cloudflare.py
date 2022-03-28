@@ -3,10 +3,10 @@ import logging.handlers
 import re
 import time
 
-import ConfigParser
+import configparser
 import requests
 
-config = ConfigParser.SafeConfigParser()
+config = configparser.ConfigParser()
 config.read('conf/update_cloudflare.props')
 
 logfile = config.get('log', 'logfile')
