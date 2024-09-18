@@ -82,7 +82,7 @@ if zone_id is not None:
                 r = None
             if r is not None and r.status_code == 200:
                 if r is not None:
-                    m = re.search('\d+[.]\d+[.]\d+[.]\d+', r.text)
+                    m = re.search(r'\d+[.]\d+[.]\d+[.]\d+', r.text)
                     if m is not None:
                         new_ip = m.group()
             if new_ip is not None and new_ip == current_ip:
